@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0f19">
+<title>GCSE Mock Revision Planner</title>
+<style>
+:root{--bg:#0b0f19;--card:#111827;--ink:#f3f4f6;--muted:#9ca3af;--line:#374151;--accent:#3b82f6;--soft:#1e293b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:auto;padding:22px 16px 50px}.hero{background:#111827;border:1px solid var(--line);color:white;border-radius:18px;padding:24px;margin-bottom:20px}
+.eyebrow{font-size:11px;letter-spacing:.14em;font-weight:800;color:#818cf8}.hero h1{font-size:clamp(25px,5vw,38px);line-height:1.1;margin:8px 0}.hero p{color:#9ca3af;margin:8px 0 0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}.stat{background:#1f293766;border:1px solid var(--line);border-radius:12px;padding:12px}.stat strong{display:block;font-size:24px;color:#f3f4f6}.stat span{font-size:12px;color:#9ca3af}
+.progress{height:8px;background:#1f2937;border-radius:20px;overflow:hidden;margin-top:12px}.progress>div{height:100%;background:#22c55e;width:0;transition:width .2s}
+h2{font-size:18px;margin:22px 0 10px;color:var(--ink)}.nav{display:flex;gap:8px;overflow-x:auto;padding:3px 2px 12px;scrollbar-width:thin}
+.daybtn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:11px;padding:10px 14px;min-width:88px;font-weight:750;cursor:pointer;white-space:nowrap}
+.daybtn small{display:block;font-size:10px;font-weight:500;color:var(--muted);margin-top:2px}.daybtn.active{background:var(--soft);border-color:var(--accent);color:#60a5fa}
+.dayhead{background:#161e2e;border:1px solid var(--line);border-radius:14px;padding:17px;margin:8px 0 14px}.dayhead h2{font-size:25px;margin:2px 0;color:#f3f4f6}.dayhead p{margin:4px 0;color:#9ca3af;font-size:13px}
+.session{--c:#9ca3af;--tint:#1e293b;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:13px;padding:15px;margin:10px 0}
+.session.done{opacity:.55}.session.done .session-title{text-decoration:line-through}
+.topline{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.tag{background:var(--tint);color:var(--c);border-radius:30px;padding:3px 9px;font-size:11px;font-weight:800}
+.time{font-size:12px;color:var(--muted)}.session-title{font-weight:800;font-size:16px;margin-top:8px;color:var(--ink)}
+.subhead{font-size:11px;font-weight:850;letter-spacing:.07em;color:var(--muted);margin:12px 0 3px}
+ul{padding-left:19px;margin:5px 0}li{margin:4px 0;font-size:14px;color:#d1d5db}
+.method{background:#1f2937;border-radius:9px;padding:10px;font-size:13px;margin-top:10px;color:#d1d5db}
+.method strong{color:#f3f4f6}
+.checkrow{display:flex;gap:10px;align-items:flex-start}.checkrow input{width:19px;height:19px;margin:2px 0 0;accent-color:#3b82f6;flex-shrink:0;cursor:pointer}
+.break{display:flex;justify-content:space-between;gap:10px;background:#161e2e;border:1px dashed var(--line);color:#9ca3af;border-radius:9px;padding:9px 12px;margin:8px 0;font-size:12px}
+.legend{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.legend .tag{--c:#9ca3af;--tint:#1f2937}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.controls button{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:9px 12px;cursor:pointer;color:var(--ink)}
+.controls button:hover{background:#1f2937}
+.note{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;color:#9ca3af;font-size:13px}
+.note strong{color:var(--ink)}
+@media(max-width:600px){main{padding:14px 11px 35px}.hero{padding:19px}.stats{gap:7px}.stat{padding:9px}.stat strong{font-size:20px}.daybtn{min-width:80px;padding:9px 11px}.session{padding:12px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<header class="hero">
+ <div class="eyebrow">GCSE MOCKS · REVISION COMMAND CENTRE</div>
+ <h1>Your interactive revision plan</h1>
+ <p>Saturday and Sunday preparation, followed by your mock-exam period. Science-focused, with active recall and exam practice.</p>
+ <div class="stats">
+  <div class="stat"><strong id="doneCount">0</strong><span>Sessions completed</span></div>
+  <div class="stat"><strong id="doneTime">0m</strong><span>Revision time completed</span></div>
+  <div class="stat"><strong id="percent">0%</strong><span>Overall progress</span></div>
+ </div>
+ <div class="progress"><div id="overallBar"></div></div>
+</header>
+<h2>Choose a day</h2>
+<nav class="nav" id="dayNav" aria-label="Choose revision day"></nav>
+<section id="dayPanel" aria-live="polite"></section>
+<section class="note">
+ <strong>How to use this planner</strong>
+ <p>Tick each session when finished. Your progress is saved in this browser on this device. Use the reset buttons if you want to start again. For every topic, attempt recall before opening notes, then check your gaps and practise exam questions.</p>
+ <div class="legend" id="legend"></div>
+</section>
+<div class="controls">
+ <button id="resetDay">Reset this day</button><button id="resetAll">Reset all progress</button>
+</div>
+</main>
+<script>
+const C={
+ Biology:['#4ade80','#052e16'],Chemistry:['#2dd4bf','#042f2e'],Physics:['#60a5fa','#172554'],Maths:['#c084fc','#3b0764'],
+ 'English Literature':['#f472b6','#500724'],'English Language':['#e879f9','#4a044e'],Geography:['#facc15','#422006'],
+ 'Computer Science':['#94a3b8','#0f172a'],Business:['#fb923c','#431407']
+};
+const S=(time,subject,duration,topics,method)=>({time,subject,duration,topics,method});
+const B=(time,duration,label='Break — step away from your desk')=>({time,duration,break:true,label});
+const days=[
+{day:'Saturday',period:'Weekend 1',total:540,sessions:[
+S('09:00–10:15','Biology',75,['Cell biology: animal, plant and bacterial cells; microscopy and magnification; specialised cells; mitosis and stem cells.','Organisation: digestive enzymes, food tests, the heart, blood vessels and transport in plants.','Infection and response: pathogens, disease, vaccination, antibiotics and immunity.','Bioenergetics: photosynthesis and respiration.'],'5 min brain dump; 20 min identify gaps; 20 min learn missing content; 15 min reproduce processes from memory; 15 min exam questions and marking.'),
+B('10:15–10:30',15),S('10:30–11:45','English Literature',75,['Romeo and Juliet: love, fate, conflict, family, violence and responsibility.','Recall 12–15 versatile quotations, including speaker, recipient, context and meaning.','Revise language methods and Shakespeare’s intentions.'],'Write quotations from memory, check accuracy, annotate key words and produce one analytical paragraph. Finish by planning a theme-based essay.'),
+B('11:45–12:00',15),S('12:00–13:00','Chemistry',60,['Atomic structure, isotopes and electronic structure.','Periodic table, groups and trends.','Ionic, covalent and metallic bonding; properties of substances.','Acids, salts, electrolysis and energy changes.'],'Create a blank equation sheet. Recall word and symbol equations, common reactions, gas tests and practical steps. Check and correct from memory. Finish with exam questions.'),
+B('13:00–13:45',45,'Lunch — take a proper break'),S('13:45–15:00','Maths',75,['Algebraic manipulation, rearranging formulae and quadratics.','Simultaneous equations, trigonometry and circle theorems.','Probability, ratio, proportion and multi-step problem solving.'],'Complete higher-tier exam questions without notes. Mark them, identify the exact error and redo incorrect questions from scratch.'),
+B('15:00–15:15',15),S('15:15–16:15','Physics',60,['Energy stores, transfers, conservation and efficiency.','Specific heat capacity and its required practical.','Current, potential difference, resistance and circuit rules.','Series and parallel circuits; I–V characteristics.'],'Recall equations and units, rearrange them and complete calculations. Practise explaining the specific heat capacity and resistance practicals.'),
+B('16:15–16:45',30,'Long break — snack and movement'),S('16:45–17:45','Biology',60,['Required practicals: microscopy, osmosis, food tests and photosynthesis.','Enzyme action and effects of temperature and pH.','Heart and circulation; pathogens and immune response.','Photosynthesis and respiration limiting factors.'],'Draw practical methods from memory, identify independent, dependent and control variables, then complete six-mark and unfamiliar-context questions.'),
+B('17:45–18:30',45,'Dinner'),S('18:30–19:30','Geography',60,['Natural hazards: tectonic hazards, weather hazards and climate change.','Living world: tropical rainforests and hot deserts.','UK physical landscapes: rivers and coasts, if included in your mock.'],'Recall case-study locations, statistics, causes, effects and responses. Draw process diagrams and complete one six-mark question.'),
+B('19:30–19:45',15),S('19:45–20:30','Chemistry',45,['Acid reactions, neutralisation and salts.','Displacement and combustion reactions.','Electrolysis half-equations and energy-change representations.'],'Spend 15 min reproducing equations without notes, 15 min checking and correcting, and 15 min answering exam questions.'),
+S('20:30–20:40','Biology',10,['Recall key processes, definitions and required-practical variables.'],'Close notes and explain each process aloud.'),S('20:40–20:50','Chemistry',10,['Reproduce the equations you found hardest.'],'Write them from memory and check symbols, formulae and balancing.'),S('20:50–21:00','English Literature',10,['Recall quotations, speakers and their themes.'],'Write quotations from memory and check them.')
+]},
+{day:'Sunday',period:'Weekend 1',total:540,sessions:[
+S('09:00–10:15','Biology',75,['Revisit gaps from Saturday across cell biology, organisation, infection and bioenergetics.','Practise required practicals and key biological processes.','Review common command words and six-mark responses.'],'10 min closed-book recall; 20 min repair gaps; 30 min exam questions; 15 min mark and correct.'),
+B('10:15–10:30',15),S('10:30–11:30','English Literature',60,['Romeo and Juliet: recall quotations for love, conflict, fate, family and violence.','Practise selecting evidence and analysing language and structure.'],'Quotation test, then plan one essay and write one timed analytical paragraph. Check that analysis links to the question.'),
+B('11:30–11:45',15),S('11:45–12:45','Maths',60,['Mixed higher-tier algebra, geometry, ratio, probability and trigonometry.','Return to Saturday’s incorrect questions.'],'Complete a timed mixed set. Mark it and redo errors without reading the worked solution first.'),
+B('12:45–13:30',45,'Lunch'),S('13:30–14:45','Chemistry',75,['Atomic structure, periodic table and bonding.','Chemical changes: acids, reactivity, salts and electrolysis.','Quantitative chemistry: key formulae and only the calculations you struggle with.','Energy changes and required practicals.'],'20 min equation retrieval; 20 min reaction patterns; 25 min exam questions; 10 min correction. Prioritise equations over extensive moles practice.'),
+B('14:45–15:00',15),S('15:00–16:00','Geography',60,['Case-study facts for hazards and ecosystems.','Rivers and coasts processes, landforms and management, if on your mock.','Climate change and responses.'],'Recall case-study facts on blank paper. Draw diagrams and answer one four-mark and one six-mark question.'),
+B('16:00–16:30',30,'Long break'),S('16:30–17:30','Physics',60,['Particle model: density, changes of state and internal energy.','Atomic structure, radiation and nuclear equations.','Energy and electricity equations and practicals.'],'Write equations with units from memory. Practise rearrangement, calculation questions and one required-practical evaluation.'),
+B('17:30–18:15',45,'Dinner'),S('18:15–19:00','English Language',45,['AQA Paper 1: Q1 retrieval, Q2 language, Q3 structure and Q4 evaluation.','Q5 descriptive or narrative writing.'],'Complete one reading question under timed conditions. Plan a Q5 response with a clear structure and deliberate language choices.'),
+B('19:00–19:15',15),S('19:15–20:00','Computer Science',45,['OCR J277 Paper 1: CPU architecture and fetch-decode-execute cycle.','Registers, cache, RAM, ROM and secondary storage.','Binary and hexadecimal, data representation and networks if included in your mock.'],'Use flashcards, explain CPU operations aloud, practise binary/hex questions and complete short exam questions.'),
+B('20:00–20:15',15),S('20:15–20:45','Business',30,['OCR GCSE Business: business ownership, objectives, entrepreneurs and stakeholders.','Market research, segmentation and marketing mix.'],'Recall key definitions, then apply two concepts to a short business scenario.'),
+S('20:45–20:55','Biology',10,['Most difficult processes and definitions from the weekend.'],'Closed-book recall.'),S('20:55–21:05','Chemistry',10,['Equations and reaction patterns.'],'Write from memory, then check.'),S('21:05–21:15','English Literature',10,['Quotations, speaker and context.'],'Final quotation retrieval.')
+]},
+{day:'Monday',period:'Week 1 · Exams',total:140,sessions:[
+S('After exams · 60 min','Maths',60,['Mixed Edexcel questions: algebra, geometry, ratio, probability and topics that caused difficulty in the mock.'],'Complete timed questions, mark them and redo errors.'),B('15 min',15),S('Next · 45 min','Geography',45,['Case-study recall, statistics, hazards and physical geography processes.'],'Use a blank page and practise a six-mark answer.'),B('15 min',15),S('Final · 20 min','Chemistry',20,['Recall chemical equations, acids, salts and electrolysis.'],'Write equations from memory and correct them.')
+]},
+{day:'Tuesday',period:'Week 1 · Exams',total:110,sessions:[
+S('After exams · 45 min','English Language',45,['Paper 1 Q1–Q5 structure, language and structural analysis, evaluation and creative writing.'],'Practise one reading response and plan a Q5 answer.'),B('15 min',15),S('Next · 30 min','Chemistry',30,['Reactions and equations: acids, metals, salts, electrolysis and energy changes.'],'Equation retrieval and short exam questions.'),B('10 min',10),S('Final · 20 min','Computer Science',20,['CPU, registers, memory and systems terminology.'],'Recall definitions and explain the fetch-decode-execute cycle.')
+]},
+{day:'Wednesday',period:'Week 1 · No exams',total:435,sessions:[
+S('09:00–11:00','Chemistry',120,['AQA Paper 1 topics: atomic structure and periodic table; bonding; quantitative chemistry; chemical changes; energy changes.','Prioritise equations, reactions, practical methods and required explanations.'],'20 min specification checklist, 30 min equation recall, 40 min exam questions, 20 min marking and 10 min correction.'),
+B('11:00–11:20',20),S('11:20–12:50','Physics',90,['Energy: stores, transfers, efficiency and specific heat capacity.','Electricity: circuits, resistance, I–V graphs and equations.','Particle model and atomic structure/radiation.'],'Recall equations and units; solve calculation questions; explain practical methods and evaluate errors.'),
+B('12:50–13:35',45,'Lunch'),S('13:35–14:50','Computer Science',75,['OCR J277 Paper 1: systems architecture, memory and storage, networks, network security, systems software and ethical, legal and cultural issues.','Data representation and CPU operation.'],'Create a closed-book topic map, then answer short and extended exam questions. Check command words and precise terminology.'),
+B('14:50–15:10',20),S('15:10–16:10','English Language',60,['AQA Paper 1 reading questions Q1–Q4 and Q5 creative writing.','Structure, language analysis, evaluation and narrative organisation.'],'Complete a timed reading question and a Q5 plan or opening. Mark against the assessment objectives.'),
+B('16:10–16:40',30),S('16:40–17:10','Biology',30,['Cell biology, infection, organisation and bioenergetics weak areas.'],'Short closed-book retrieval and corrections.'),S('17:10–17:40','Maths',30,['Review difficult questions from Tuesday and Monday.'],'Redo incorrect questions without notes.'),S('17:40–18:10','Business',30,['Ownership, stakeholders, marketing and business objectives.'],'Recall definitions and apply them to a short case study.')
+]},
+{day:'Thursday',period:'Week 1 · Exams',total:170,sessions:[
+S('After exams · 75 min','Chemistry',75,['AQA Paper 1: equations, chemical changes, acids and salts, electrolysis and energy changes.','Review any weak atomic structure, periodic table and bonding knowledge.'],'20 min equation retrieval, 25 min exam questions, 20 min marking and 10 min error correction.'),B('15 min',15),S('Next · 60 min','Computer Science',60,['OCR J277 Paper 1: CPU and memory, systems architecture, networks, security, storage and systems software.'],'Recall key terms, draw CPU diagrams and complete exam questions.'),B('10 min',10),S('Final · 20 min','Physics',20,['Recall equations, units and practical variables.'],'Write equations from memory and check rearrangements.')
+]},
+{day:'Friday',period:'Week 1 · Exams',total:150,sessions:[
+S('After exams · 60 min','Physics',60,['Energy and electricity calculations; particle model and atomic structure.','Required practicals and unfamiliar-context questions.'],'Complete exam questions, mark them and write corrections for every error.'),B('15 min',15),S('Next · 45 min','Maths',45,['Mixed higher-tier questions: algebra, geometry, ratio, probability and problem solving.'],'Timed question set and corrections.'),B('10 min',10),S('Final · 30 min','Business',30,['Business activity, marketing, people and any specified Paper 1 content.'],'Recall key definitions, then apply concepts to case-study scenarios.')
+]},
+{day:'Saturday',period:'Week 2 · Weekend',total:360,sessions:[
+S('09:00–11:30','Physics',150,['Review all AQA Paper 1 content: energy, electricity, particle model and atomic structure.','Check equation recall, units, practicals and six-mark explanations.'],'30 min recall; 45 min exam questions; 30 min practicals; 30 min marking and correction; 15 min recall of errors.'),B('11:30–12:00',30),S('12:00–14:00','Maths',120,['Mixed Edexcel higher-tier practice, focusing on weakest topics and multi-step reasoning.'],'Complete timed sections, mark them, redo incorrect questions and note recurring mistakes.'),B('14:00–14:45',45,'Lunch'),S('14:45–16:15','Business',90,['OCR GCSE Business: business activity, marketing, people and any additional content confirmed for your mock.','Ownership, objectives, stakeholders, market research, segmentation and marketing mix.'],'Recall definitions, apply each concept to a business example and answer six- and nine-mark questions.')
+]},
+{day:'Sunday',period:'Week 2 · Weekend',total:360,sessions:[
+S('09:00–11:00','Physics',120,['Revisit weakest Paper 1 areas and required practicals.','Practise energy, electricity, density, particle model and atomic calculations as applicable.'],'Timed exam questions, practical-method recall, mark and correct.'),B('11:00–11:30',30),S('11:30–13:30','Maths',120,['Mixed exam practice, especially questions you could not solve independently.','Review algebra, geometry, graphs, ratio and probability.'],'Timed practice and correction. Redo difficult questions from a blank page.'),B('13:30–14:15',45,'Lunch'),S('14:15–15:45','Business',90,['Review specified topics, case-study application and evaluation.','Practise explaining effects on a business and making justified decisions.'],'Answer one longer case-study question. Check knowledge, application, analysis and judgement.')
+]},
+{day:'Monday',period:'Week 2 · Exam',total:135,sessions:[
+S('After exams · 60 min','Business',60,['Review the remaining specified content, key terms and case-study application.'],'Use active recall and practise one extended response.'),B('15 min',15),S('Next · 60 min','Physics',60,['AQA Paper 1 weak areas, equations, practicals and exam questions.'],'Timed practice and marking. Finish with a formula recall test.')
+]},
+{day:'Tuesday',period:'Week 2 · Exams',total:0,sessions:[
+S('Exam day','Physics',0,['Your Physics and Business exams are scheduled today.','No additional revision is required after the exams.'],'Before each exam, use only a brief confidence-building recall of key equations or terminology. Prioritise breakfast, equipment and arriving calmly.')
+]}
+];
+let active=0,done=new Set();
+const nav=document.getElementById('dayNav'),panel=document.getElementById('dayPanel');
+const key=(d,i)=>d+'-'+i;
+function allSessions(){return days.flatMap((d,di)=>d.sessions.map((s,si)=>({d:di,i:si,s}))).filter(x=>!x.s.break&&x.s.duration>0)}
+function fmt(m){return m>=60?Math.floor(m/60)+'h'+(m%60?' '+m%60+'m':''):m+'m'}
+function updateStats(){
+ const all=allSessions(),n=all.filter(x=>done.has(key(x.d,x.i))).length,minutes=all.filter(x=>done.has(key(x.d,x.i))).reduce((a,x)=>a+x.s.duration,0),pct=all.length?Math.round(n/all.length*100):0;
+ document.getElementById('doneCount').textContent=n;
+ document.getElementById('doneTime').textContent=fmt(minutes);
+ document.getElementById('percent').textContent=pct+'%';
+ document.getElementById('overallBar').style.width=pct+'%';
+}
+function renderNav(){
+ nav.innerHTML='';
+ days.forEach((d,i)=>{let b=document.createElement('button');b.className='daybtn'+(i===active?' active':'');b.setAttribute('aria-pressed',i===active);b.innerHTML=d.day+'<small>'+d.period+'</small>';b.onclick=()=>{active=i;renderNav();renderDay()};nav.appendChild(b)});
+}
+function renderDay(){
+ const d=days[active],valid=d.sessions.filter(s=>!s.break&&s.duration>0),count=valid.filter(s=>done.has(key(active,d.sessions.indexOf(s)))).length;
+ panel.innerHTML='';
+ const head=document.createElement('div');head.className='dayhead';
+ head.innerHTML='<div style="font-size:11px;font-weight:800;letter-spacing:.1em;color:#9ca3af">'+d.period.toUpperCase()+'</div><h2>'+d.day+'</h2><p>Scheduled focused revision: <strong>'+fmt(d.total)+'</strong> · '+count+'/'+valid.length+' sessions completed</p><div class="progress"><div style="width:'+(valid.length?count/valid.length*100:0)+'%"></div></div>';
+ panel.appendChild(head);
+ if(!d.sessions.length){panel.innerHTML+='<p>Rest and prepare for the next day.</p>';return}
+ d.sessions.forEach((s,i)=>{
+  if(s.break){let el=document.createElement('div');el.className='break';el.innerHTML='<span>☕ '+s.time+' · '+s.label+'</span><strong>'+s.duration+' min</strong>';panel.appendChild(el);return}
+  let col=C[s.subject]||['#9ca3af','#1f2937'],isDone=done.has(key(active,i));
+  let el=document.createElement('article');el.className='session'+(isDone?' done':'');el.style.setProperty('--c',col[0]);el.style.setProperty('--tint',col[1]);
+  el.innerHTML='<div class="checkrow"><input type="checkbox" aria-label="Mark session complete" '+(isDone?'checked':'')+'><div style="flex:1;min-width:0"><div class="topline"><span class="tag">'+s.subject+'</span><span class="time">'+s.time+'</span><span class="time">· '+(s.duration?fmt(s.duration):'Exam day')+'</span></div><div class="session-title">'+s.subject+' revision</div><div class="subhead">SPECIFIC CONTENT</div><ul>'+s.topics.map(t=>'<li>'+t+'</li>').join('')+'</ul><div class="method"><strong>REVISION METHOD</strong><br>'+s.method+'</div></div></div>';
+  el.querySelector('input').addEventListener('change',e=>{if(e.target.checked)done.add(key(active,i));else done.delete(key(active,i));save();renderDay();updateStats();renderNav()});
+  panel.appendChild(el);
+ });
+ updateStats();
+}
+function save(){try{localStorage.setItem('gcseRevisionProgressV1',JSON.stringify([...done]))}catch(e){}}
+try{done=new Set(JSON.parse(localStorage.getItem('gcseRevisionProgressV1')||'[]'))}catch(e){}
+document.getElementById('resetDay').onclick=()=>{if(confirm('Reset checkboxes for '+days[active].day+'?')){days[active].sessions.forEach((s,i)=>done.delete(key(active,i)));save();renderDay();renderNav()}};
+document.getElementById('resetAll').onclick=()=>{if(confirm('Reset all revision progress?')){done.clear();save();renderDay();renderNav()}};
+const legend=document.getElementById('legend');Object.entries(C).forEach(([name,col])=>{let s=document.createElement('span');s.className='tag';s.style.setProperty('--c',col[0]);s.style.setProperty('--tint',col[1]);s.textContent=name;legend.appendChild(s)});
+renderNav();renderDay();
+</script>
+</body></html>
